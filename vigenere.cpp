@@ -32,7 +32,7 @@ void Vigenere::Solve()
     Decrypt(&cipher, &key, &decrypted);
     qDebug() << "Plain Text:";
     qDebug() << QString(decrypted);
-    qDebug() << QString("Key: %1").arg(*key) << endl;
+    qDebug() << QString("Key: %1").arg(QString(key)) << endl;
 }
 
 quint32 Vigenere::probableKeyLength()
@@ -134,7 +134,11 @@ void Vigenere::findKey(QByteArray* key, quint32 keyLength)
     foreach(QByteArray caesar, caesars){
         QList<double> chiSquareds;
         for(quint32 shift = 0; shift < 26; shift++){
-            QByteArray tmpCaesar = caesarDecrypt(caesar, QChar(shift + 97));
+            QByteArray tmpCaesar = QByteArray();
+            QChar keyChar = QChar(shift + 97);
+            QByteArray key = QByteArray();
+            key.append(keyChar);
+            Decrypt(&caesar, &key, &tmpCaesar);
 
             double chiSquared = 0;
             for(quint32 letter = 97; letter <= 122; letter++){
@@ -158,20 +162,6 @@ void Vigenere::findKey(QByteArray* key, quint32 keyLength)
         qDebug() << QString("Vigenere Letter Found: %1").arg(keyChar) << endl;
         key->append(keyChar);
     }
-}
-
-QByteArray Vigenere::caesarDecrypt(QByteArray caesar, QChar letter)
-{
-    QByteArray decrypted = QByteArray();
-    quint32 shift = letter.toLatin1() - 97;
-    for(quint32 c = 0; c < caesar.length(); c++){
-        quint32 tmp = caesar[c] - shift;
-        if(tmp < 97){
-            tmp += 26;
-        }
-        decrypted.append(tmp);
-    }
-    return decrypted;
 }
 
 void Vigenere::Decrypt(QByteArray* cipher, QByteArray* key, QByteArray* result)

@@ -22,7 +22,6 @@ private:
     double indexOfCoincidence(QByteArray*);
     void setCaesars(QList<QByteArray>*, quint32);
     void findKey(QByteArray*, quint32);
-    QByteArray caesarDecrypt(QByteArray, QChar);
 };
 
 #endif // VIGENERE_H
