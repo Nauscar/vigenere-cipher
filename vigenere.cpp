@@ -5,17 +5,17 @@ Vigenere::Vigenere()
 
 }
 
-int Vigenere::Import()
+void Vigenere::Import(QString* filename)
 {
-    QFile file("download-ciphertext.cgi");
+    QFile file(*filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        qDebug() << "Unable to open file" << endl;
-        return -1;
+        qDebug() << QString("Unable to open file \"%1\"").arg(*filename) << endl;
+        return;
     }
     cipher = file.readAll();
+    file.close();
     qDebug() << QString("A cipher of size %1 was imported successfully").arg(cipher.length()) << endl;
-    //file.close();
-    return 0;
+    return;
 }
 
 QByteArray* Vigenere::GetCipher()
@@ -23,16 +23,25 @@ QByteArray* Vigenere::GetCipher()
     return &cipher;
 }
 
-void Vigenere::Solve()
+void Vigenere::Solve(QString* destination)
 {
     quint32 keyLength = probableKeyLength(); //A list of most probable key lengths is returned.
     QByteArray key = QByteArray();
     findKey(&key, keyLength);
     QByteArray decrypted = QByteArray();
     Decrypt(&cipher, &key, &decrypted);
-    qDebug() << "Plain Text:";
-    qDebug() << QString(decrypted);
-    qDebug() << QString("Key: %1").arg(QString(key)) << endl;
+    //qDebug() << "Plain Text:";
+    //qDebug() << QString(decrypted);
+
+    qDebug() << QString("Key found: \"%1\"").arg(QString(key));
+
+    QFile file(*destination);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug() << QString("Unable to open file \"%1\"").arg(*destination);
+    }
+    file.write(decrypted);
+    file.close();
+    qDebug() << QString("Plaintext outputted to \"%1\"").arg(*destination) << endl;
 }
 
 quint32 Vigenere::probableKeyLength()
@@ -168,6 +177,17 @@ void Vigenere::Decrypt(QByteArray* cipher, QByteArray* key, QByteArray* result)
 {
     for(quint32 c = 0; c < cipher->length(); c++){
         quint32 tmp = (*cipher)[c] - key->at(c % key->length()) + 97;
+        if(tmp < 97){
+            tmp += 26;
+        }
+        result->append(tmp);
+    }
+}
+
+void Vigenere::Encrypt(QByteArray* plaintext, QByteArray* key, QByteArray* result)
+{
+    for(quint32 c = 0; c < plaintext->length(); c++){
+        quint32 tmp = (*plaintext)[c] + key->at(c % key->length()) - 97;
         if(tmp < 97){
             tmp += 26;
         }

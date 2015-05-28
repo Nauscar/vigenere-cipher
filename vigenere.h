@@ -10,11 +10,12 @@ class Vigenere
 {
 public:
     Vigenere();
-    int Import();
+    void Import(QString*);
     QByteArray* GetCipher();
     quint32 GetCipherLength();
-    void Solve();
+    void Solve(QString*);
     void Decrypt(QByteArray*, QByteArray*, QByteArray*);
+    void Encrypt(QByteArray*, QByteArray*, QByteArray*);
 private:
     QByteArray cipher;
 
