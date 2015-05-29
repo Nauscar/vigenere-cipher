@@ -46,35 +46,37 @@ void Vigenere::Solve(QString* destination)
 
 quint32 Vigenere::probableKeyLength()
 {
-    QList<double> averageICs;
+    QList<qreal> averageICs;
     quint32 length;
-    quint32 verify = 0;
+    QList<quint32> verify;
     for(length = 2; length < cipher.length(); length++){
         QList<QByteArray> caesars;
         setCaesars(&caesars, length);
 
-        double averageIC = 0;
+        qreal averageIC = 0;
         foreach(QByteArray caeser, caesars){
             averageIC += indexOfCoincidence(&caeser);
         }
         averageIC /= caesars.length();
 
         if(averageICs.length() > 1){
-        double previous = averageICs.at(averageICs.length() - 2);
-        double reference = averageICs.at(averageICs.length() - 1);
+        qreal previous = averageICs.at(averageICs.length() - 2);
+        qreal reference = averageICs.at(averageICs.length() - 1);
             if(reference > averageIC && reference > previous){
-                if(verify == 0){
-                    verify = length - 1;
+                if(verify.length() != 0){
+                    foreach(quint32 entry, verify){
+                        if((length - 1) % entry == 0) {
+                            qDebug() << endl << QString("Repetition discovered! Probable key length is %1").arg(entry) << endl;
+                            return entry;
+                        }
+                    }
                 }
-                else if((length - 1) % verify == 0) {
-                    qDebug() << endl << QString("Repetition discovered! Probable key length is %1").arg(verify) << endl;
-                    return verify;
-                }
+                verify.append(length - 1);
             }
         }
 
         averageICs.append(averageIC);
-        qDebug() << QString("Key Size %1, \t Average I.C. %2").arg(length).arg(averageIC);
+        qDebug() << QString("Key Size %1, \t Average IC %2").arg(length).arg(averageIC);
     }
     return 0;
 }
@@ -89,7 +91,7 @@ void Vigenere::setCaesars(QList<QByteArray>* caesars, quint32 length)
     }
 }
 
-double Vigenere::indexOfCoincidence(QByteArray* caesar)
+qreal Vigenere::indexOfCoincidence(QByteArray* caesar)
 {
     quint32 c = 26; //A constant of 26 is used due to English.
     quint32 length = caesar->length();
@@ -99,7 +101,7 @@ double Vigenere::indexOfCoincidence(QByteArray* caesar)
         quint32 count = caesar->count(ch.toLatin1());
         numerator += count * (count - 1);
     }
-    return (double)c * numerator / (length * (length - 1));
+    return (qreal)c * numerator / (length * (length - 1));
 }
 
 void Vigenere::findKey(QByteArray* key, quint32 keyLength)
@@ -134,14 +136,14 @@ void Vigenere::findKey(QByteArray* key, quint32 keyLength)
                                                           /*y*/ 0.01974,
                                                           /*z*/ 0.00074
                                                       };
-    /*double sum = 0;
+    /*qreal sum = 0;
     for(int c = 0; c < sizeof(letterProbabilities) / sizeof(*letterProbabilities); c++){
         sum += letterProbabilities[c];
     }
     qDebug() << QString("The sum of the probability set is %1").arg(sum);*/
 
     foreach(QByteArray caesar, caesars){
-        QList<double> chiSquareds;
+        QList<qreal> chiSquareds;
         for(quint32 shift = 0; shift < 26; shift++){
             QByteArray tmpCaesar = QByteArray();
             QChar keyChar = QChar(shift + 97);
@@ -149,12 +151,12 @@ void Vigenere::findKey(QByteArray* key, quint32 keyLength)
             key.append(keyChar);
             Decrypt(&caesar, &key, &tmpCaesar);
 
-            double chiSquared = 0;
+            qreal chiSquared = 0;
             for(quint32 letter = 97; letter <= 122; letter++){
                 QChar ch = QChar(letter);
                 quint32 count = tmpCaesar.count(ch.toLatin1());
-                double expected = tmpCaesar.size() * letterProbabilities[letter - 97];
-                double value = qPow((count - expected), 2) / expected;
+                qreal expected = tmpCaesar.size() * letterProbabilities[letter - 97];
+                qreal value = qPow((count - expected), 2) / expected;
                 chiSquared += value;
             }
             qDebug() << QString("Letter %1, \tChi-Squared %2").arg(QChar(shift + 97)).arg(chiSquared);
@@ -176,7 +178,13 @@ void Vigenere::findKey(QByteArray* key, quint32 keyLength)
 void Vigenere::Decrypt(QByteArray* cipher, QByteArray* key, QByteArray* result)
 {
     for(quint32 c = 0; c < cipher->length(); c++){
-        quint32 tmp = (*cipher)[c] - key->at(c % key->length()) + 97;
+        quint32 tmpChar = (*cipher)[c];
+        if(tmpChar < 97 || tmpChar > 122){
+            //qDebug() << QString("Invalid character of value %1 detected").arg(tmpChar);
+            cipher->remove(c, 1);
+            break;
+        }
+        quint32 tmp = tmpChar - key->at(c % key->length()) + 97;
         if(tmp < 97){
             tmp += 26;
         }
@@ -187,9 +195,15 @@ void Vigenere::Decrypt(QByteArray* cipher, QByteArray* key, QByteArray* result)
 void Vigenere::Encrypt(QByteArray* plaintext, QByteArray* key, QByteArray* result)
 {
     for(quint32 c = 0; c < plaintext->length(); c++){
-        quint32 tmp = (*plaintext)[c] + key->at(c % key->length()) - 97;
-        if(tmp < 97){
-            tmp += 26;
+        quint32 tmpChar = (*plaintext)[c];
+        if(tmpChar < 97 || tmpChar > 122){
+            //qDebug() << QString("Invalid character of value %1 detected").arg(tmpChar);
+            plaintext->remove(c, 1);
+            break;
+        }
+        quint32 tmp = tmpChar + key->at(c % key->length()) - 97;
+        if(tmp > 122){
+            tmp -= 26;
         }
         result->append(tmp);
     }

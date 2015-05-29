@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
             break;
         case -1:
             delete vigenere;
-            qDebug() << "Exit";
-            return a.exec();
+            //qDebug() << "Exit";
+            return 0;
         default:
             output << "Invalid input" << endl;
             break;

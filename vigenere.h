@@ -20,7 +20,7 @@ private:
     QByteArray cipher;
 
     quint32 probableKeyLength();
-    double indexOfCoincidence(QByteArray*);
+    qreal indexOfCoincidence(QByteArray*);
     void setCaesars(QList<QByteArray>*, quint32);
     void findKey(QByteArray*, quint32);
 };
