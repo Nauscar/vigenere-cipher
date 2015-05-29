@@ -47,7 +47,7 @@
 \pagebreak
 \justify
 \section{Finding the Key Length}
-The first step taken to find the length of the key was to use a method of counting repetition, or coincidence counting known as the \gls{ic}.
+The first step taken to find the length of the key was to use a method of counting repetition, or coincidence counting, known as the \gls{ic}.
 \subsection{The \acrlong{ic}}
 The \gls{ic} provides statistical information on letter repetition in the cipher text.  Since the \gls{vigenere} cipher uses multiple Caesar ciphers, or letter shifts, letter repetition should occur periodically with respect to the key size used.  The formula used to calculate the \gls{ic} can be seen in Formula \ref{eq:ic}
 
@@ -56,9 +56,9 @@ The \gls{ic} provides statistical information on letter repetition in the cipher
 \label{eq:ic}
 \end{equation}
 
-The constant values in in Formula \ref{eq:ic} are equal to twenty-six and the length of the Caesar cipher, for c and N respectively.  Constant c is equal to twenty-six due to the number of lower-case letters in the English alphabet.
+The constant values in Formula \ref{eq:ic} are equal to twenty-six and the length of the Caesar cipher, for c and N respectively.  Constant c is equal to twenty-six due to the number of lower-case letters in the English alphabet.
 \subsection{Experimental Findings}
-To determine the period of the \gls{vigenere} cipher a key length of two is first assumed and then incremented for each round of calculation.  Each round consists of splitting the cipher text into its appropriate Caesar ciphers based on the size of the assumed key.  The \gls{ic} is then calculated for each Caesar cipher, and those values are averaged recorded for the appropriate assumed key size.  This is done for each key length and once a local maximum in the calculated \glspl{ic} is detected, the appropriate length is added to a list.  Once another local maximum is found that has a length modulo a previously recorded list entry, repetition is discovered and a key length is assumed within reason.  Table \ref{tab:ic} shows the calculated \glspl{ic} for the cipher text listed in \ref{app:cipher}.
+To determine the period of the \gls{vigenere} cipher a key length of two is first assumed and then incremented for each round of calculations.  Each round consists of splitting the cipher text into its appropriate Caesar ciphers based on the size of the assumed key.  The \gls{ic} is then calculated for each Caesar cipher, and those values are averaged and recorded for the appropriate assumed key size.  This is done for each key length and once a local maximum in the calculated \glspl{ic} is detected, the appropriate length is added to a list.  Once another local maximum is found that has a length modulo a previously recorded list entry, repetition is discovered and a key length is assumed within reason.  Table \ref{tab:ic} shows the calculated \glspl{ic} for the cipher text listed in \ref{app:cipher}.
 
 \newcolumntype{Z}{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}X}
 \begin{table}[h]
@@ -84,7 +84,7 @@ To determine the period of the \gls{vigenere} cipher a key length of two is firs
 \label{tab:ic}
 \end{table}
 
-The data in \ref{tab:ic} shows that local maxima were detected at a key length of both seven and fourteen.  In the next section, \nameref{sec:vigkey}, a key length of seven is assumed for the procedure.
+The data in Table \ref{tab:ic} shows that local maxima were detected at a key length of both seven and fourteen.  In the next section, \nameref{sec:vigkey}, a key length of seven is assumed for the procedure.
 \pagebreak
 \section{Finding the Vigen\`ere Key}\label{sec:vigkey}
 The next step is to use the assumed key size and apply the chi-squared statistic to detect which keys produce an English-like output.
@@ -96,7 +96,7 @@ x^2(C, E) = \displaystyle\sum_{i=a}^{z} \frac{(C_i - E_i)^2}{E_i}
 \label{eq:chi}
 \end{equation}
 
-By applying this technique, the frequency distribution of a cipher text letter can be compared to the expected occurrence of a letter in the English language.  Table \ref{tab:alpha} shows the probability of each English letter occurring in plain text based on the analysis of the entries in the Concise Oxford dictionary.
+By applying this technique, the frequency distribution of a letter in the cipher text can be compared to the expected occurrence of a letter in the English language.  Table \ref{tab:alpha} shows the probability of each English letter occurring in plain text, based on the analysis of the entries in the Concise Oxford dictionary.
 
 \newcolumntype{Z}{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}X}
 \begin{table}[h]
@@ -136,7 +136,7 @@ z      & 0.074\%   \\ \bottomrule
 \end{table}
 
 \subsection{Experimental Findings}
-To determine the appropriate shift corresponding to \gls{vigenere} key letter, the chi-squared value for each letter in each cipher must be calculated.  The lowest chi-squared value indicates greater similarity between the decrypted text and expected English letter frequency.  Since a key size of seven was determined previously, there are only seven Caesar ciphers to break.  Table \ref{tab:chi} shows the calculated chi-squared values for the first Caesar cipher.
+To determine the appropriate shift corresponding to \gls{vigenere} key letter, the chi-squared value for each letter within each individual Caesar cipher must be calculated.  The lowest chi-squared value indicates greater similarity between the decrypted text and expected English letter frequency.  Since a key size of seven was determined previously, there are only seven Caesar ciphers to break.  Table \ref{tab:chi} shows the calculated chi-squared values for the first Caesar cipher.
 
 \newcolumntype{Z}{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}X}
 \begin{table}[h]
@@ -175,10 +175,10 @@ z      & 32256.5   \\ \bottomrule
 \label{tab:chi}
 \end{table}
 
-Based on the data displayed in Table \ref{tab:chi} the \gls{vigenere} letter that resulted in the lowest chi-squared value for the first Caesar cipher was "g".  When the same process is applied to the remaining Caesar ciphers, the resulting \gls{vigenere} key is "gwtlhti".
+Based on the data displayed in Table \ref{tab:chi}, the \gls{vigenere} letter that resulted in the lowest chi-squared value for the first Caesar cipher was ``g".  When the same process is applied to the remaining Caesar ciphers, the resulting \gls{vigenere} key is ``gwtlhti".
 
 \section{Conclusion}
-Based on the experimental data found using the \acrlong{ic} and chi-squared distribution the \gls{vigenere} key was determined to be "gwtlhti" and the decrypted plain text can be seen in \ref{app:plain}.  The plain text is an excerpt from George Orwell's novel 1984.
+Based on the experimental data found using the \acrlong{ic} and chi-squared distribution the \gls{vigenere} key was determined to be ``gwtlhti" and the decrypted plain text can be seen in \ref{app:plain}.  The plain text is an excerpt from George Orwell's novel 1984.
 \pagebreak
 
 \begin{appendix}
